@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- Boxicons -->
+	<link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+	<!-- My CSS -->
+	<link rel="stylesheet" href="style.css">
+	
+	<!-- FullCalendar CSS -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">
+
+<!-- FullCalendar JS -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
+
+	<title>InnerU</title>
+</head>
+
+<body>
+
+
+	<!-- SIDEBAR -->
+	<section id="sidebar">
+		<a href="#" class="brand">
+			<i class='bx bxs-donate-heart'></i>		
+				<span class="text">InnerU</span>
+		</a>
+
+		<ul class="side-menu top">
+
+			<li class="active">
+				<a href="index.html">
+					<i class='bx bxs-dashboard' ></i>
+					<span class="text">Dashboard</span>
+				</a>
+			</li>
+
+			<li>
+				<a href="Profile.html">
+					<i class='bx bxs-user-circle'></i>
+					<span class="text">Profile</span>
+				</a>
+			</li>
+
+
+			<li>
+				<a href="Addcoaches.html">
+					<i class='bx bxs-user-plus' ></i>
+					<span class="text">Add Coaches</span>
+				</a>
+			</li>
+
+
+			<li><a href="ViewUser.html">
+				<i class='bx bxs-user'></i> 
+				<span class="text">Users</span></a>
+			
+			</li>
+
+			<li>
+				<a href="Teams.html">
+					<i class='bx bxs-group' ></i>
+					<span class="text">Teams</span>
+				</a>
+			</li>
+		</ul>
+		<ul class="side-menu">
+			<li>
+				<a href="Leaderboard.html">
+					<i class='bx bxs-bar-chart-alt-2'></i>
+					<span class="text">Leaderboard</span>
+				</a>
+			</li>
+			<li>
+				<a href="Login.html" class="logout">
+					<i class='bx bxs-log-out-circle' ></i>
+					<span class="text">Logout</span>
+				</a>
+			</li>
+		</ul>
+	</section>
+	<!-- SIDEBAR -->
+
+
+
+	<!-- CONTENT -->
+	<section id="content">
+		<!-- NAVBAR -->
+		<nav>
+			<i class='bx bx-menu' ></i>
+			<a href="#" class="nav-link">Categories</a>
+			<form action="#">
+				<div class="form-input">
+					<input type="search" placeholder="Search...">
+					<button type="submit" class="search-btn"><i class='bx bx-search' ></i></button>
+				</div>
+			</form>
+			<input type="checkbox" id="switch-mode" hidden>
+			<label for="switch-mode" class="switch-mode"></label>
+			</a>
+			
+		</nav>
+		<!-- NAVBAR -->
+
+		<!-- MAIN -->
+		<main>
+			<div class="head-title">
+				<div class="left">
+					<h1>Dashboard</h1>
+					<ul class="breadcrumb">
+						<li>
+							<a href="#">Dashboard</a>
+						</li>
+						<li><i class='bx bx-chevron-right' ></i></li>
+						<li>
+							<a class="active" href="#">Home</a>
+						</li>
+					</ul>
+				</div>
+				
+			</div>
+
+			<ul class="box-info">
+				<li>
+					<a href="Addcoaches.html"> 
+						<i class='bx bxs-group'></i>
+						<span class="text">
+							<h3></h3>
+							<p>Total Coaches</p>
+						</span>
+					</a>
+				</li>
+				<li>
+					<a href="ViewUser.html"> 
+						<i class='bx bxs-group'></i>
+						<span class="text">
+							<h3></h3>
+							<p>Total User</p>
+						</span>
+					</a>
+				</li>
+				<li>
+					<i class='bx bxs-bar-chart-alt-2'></i>
+					<span class="text">
+						<p>Leaderboard</p>
+					</span>
+				</li>
+			</ul>
+
+
+			<div class="table-data">
+				<div class="order">
+					<div class="head">
+						<h3>Recent Coach Added</h3>
+						<i class='bx bx-search' ></i>
+						<i class='bx bx-filter' ></i>
+					</div>
+					<table>
+						<thead>
+							<tr>
+								<th>User</th>
+								<th>Date Added</th>
+								<th>Status</th>
+							</tr>
+						</thead>
+						<tbody>
+							
+						</tbody>
+					</table>
+				</div>
+				<div id="calendar"></div>
+		</main>
+		<!-- MAIN -->
+	</section>
+	<!-- CONTENT -->
+	
+	<script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, getCountFromServer, orderBy, query } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBNlcpQZI3TgfuP-bf1sCuhQjSNFXAdUvs",
+            authDomain: "selfcare-1476e.firebaseapp.com",
+            projectId: "selfcare-1476e",
+            storageBucket: "selfcare-1476e.firebasestorage.app",
+            messagingSenderId: "609604667702",
+            appId: "1:609604667702:web:37726298edfa70ed558b97"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Fetch counts for coaches and users
+        async function fetchCounts() {
+            try {
+                const coachesCollection = collection(db, "coaches");
+                const coachesSnapshot = await getCountFromServer(coachesCollection);
+                const totalCoaches = coachesSnapshot.data().count;
+
+                const usersCollection = collection(db, "users");
+                const usersSnapshot = await getCountFromServer(usersCollection);
+                const totalUsers = usersSnapshot.data().count;
+
+                document.querySelector(".box-info li:nth-child(1) h3").textContent = totalCoaches;
+                document.querySelector(".box-info li:nth-child(2) h3").textContent = totalUsers;
+            } catch (error) {
+                console.error("Error fetching counts:", error);
+            }
+        }
+
+        // Load recent coaches
+        async function loadRecentCoaches() {
+            let tbody = document.querySelector(".order tbody");
+            tbody.innerHTML = "";
+
+            try {
+                const querySnapshot = await getDocs(query(collection(db, "coaches"), orderBy("dateAdded", "desc")));
+                querySnapshot.forEach((docSnap) => {
+                    let coach = docSnap.data();
+                    let newRow = document.createElement("tr");
+
+                    newRow.innerHTML = `
+                        <td>${coach.name}</td>
+                        <td>${new Date(coach.dateAdded).toLocaleDateString()}</td>
+                        <td>
+                            <button class="btn-edit">Edit</button>
+                            <button class="btn-delete">Delete</button>
+                        </td>
+                    `;
+                    tbody.appendChild(newRow);
+                });
+            } catch (error) {
+                console.error("Error loading recent coaches:", error);
+            }
+        }
+
+        // Initialize FullCalendar after DOM loads
+        document.addEventListener("DOMContentLoaded", function () {
+            var calendarEl = document.getElementById("calendar");
+
+            if (calendarEl) {
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: "dayGridMonth",
+                    events: loadEvents, // Function to fetch events
+                });
+                calendar.render();
+            } else {
+                console.error("Calendar element not found!");
+            }
+        });
+
+        // Load events from Firestore
+        async function loadEvents(fetchInfo, successCallback, failureCallback) {
+            try {
+                const eventsCollection = collection(db, "events");
+                const querySnapshot = await getDocs(eventsCollection);
+
+                let events = [];
+                querySnapshot.forEach((docSnap) => {
+                    let eventData = docSnap.data();
+
+                    // Ensure Firestore Timestamps are converted to valid date formats
+                    events.push({
+                        title: eventData.title,
+                        start: eventData.start.toDate().toISOString(), 
+                        end: eventData.end ? eventData.end.toDate().toISOString() : null,
+                    });
+                });
+
+                successCallback(events);
+            } catch (error) {
+                console.error("Error fetching events:", error);
+                failureCallback(error);
+            }
+        }
+
+        // Run these functions when the page loads
+        window.onload = function () {
+            fetchCounts();
+            loadRecentCoaches();
+        };
+    </script>
+	
+
+	<script src="script.js"></script>
+</body>
+</html>

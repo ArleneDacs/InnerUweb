@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Boxicons -->
+    <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+    <!-- My CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <title>InnerU</title>
+</head>
+<style>
+    /* Add Coach Form */
+    .form-container {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin: 20px 0;
+    }
+
+    .form-container h3 {
+        font-size: 24px;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        font-size: 16px;
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+        color: #555;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 10px;
+        font-size: 14px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+        margin-top: 5px;
+    }
+
+    .form-group input:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    .btn {
+        background-color: #8ce8f4;
+        color: white;
+        padding: 10px 15px;
+        font-size: 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn:hover {
+        background-color: #0056b3;
+    }
+
+    /* New CSS for Edit and Delete buttons */
+    .btn-edit,
+    .btn-delete {
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 14px;
+        margin-right: 8px;
+        cursor: pointer;
+        border: none;
+        transition: background-color 0.3s;
+    }
+
+    .btn-edit {
+        background-color: #ffc107;
+        color: white;
+    }
+
+    .btn-edit:hover {
+        background-color: #e0a800;
+    }
+
+    .btn-delete {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .btn-delete:hover {
+        background-color: #c82333;
+    }
+
+    /* Table styling */
+    #coachTable {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    #coachTable th, #coachTable td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    #coachTable th {
+        background-color: #f2f2f2;
+    }
+</style>
+
+<body>
+    <!-- SIDEBAR -->
+    <section id="sidebar">
+        <a href="#" class="brand">
+            <i class='bx bxs-donate-heart'></i>        
+            <span class="text">InnerU</span>
+        </a>
+
+        <ul class="side-menu top">
+            <li>
+                <a href="index.html">
+                    <i class='bx bxs-dashboard' ></i>
+                    <span class="text">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="Profile.html">
+                    <i class='bx bxs-user-circle'></i>
+                    <span class="text">Profile</span>
+                </a>
+            </li>
+            <li class="active">
+                <a href="Addcoaches.html">
+                    <i class='bx bxs-user-plus' ></i>
+                    <span class="text">Add Coaches</span>
+                </a>
+            </li>
+
+            
+			<li><a href="ViewUser.html">
+				<i class='bx bxs-user'></i> 
+				<span class="text">Users</span></a>
+			
+			</li>
+
+            <li>
+                <a href="Teams.html">
+                    <i class='bx bxs-group' ></i>
+                    <span class="text">Teams</span>
+                </a>
+            </li>
+        </ul>
+        <ul class="side-menu">
+            <li>
+                <a href="Leaderboard.html">
+                    <i class='bx bxs-bar-chart-alt-2'></i>
+                    <span class="text">Leaderboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="Login.html" class="logout">
+                    <i class='bx bxs-log-out-circle' ></i>
+                    <span class="text">Logout</span>
+                </a>
+            </li>
+        </ul>
+    </section>
+    <!-- SIDEBAR -->
+
+    <!-- CONTENT -->
+    <section id="content">
+        <!-- NAVBAR -->
+        <nav>
+            <i class='bx bx-menu' ></i>
+            <a href="#" class="nav-link">Categories</a>
+            <form action="#">
+                <div class="form-input">
+                    <input type="search" placeholder="Search...">
+                    <button type="submit" class="search-btn"><i class='bx bx-search' ></i></button>
+                </div>
+            </form>
+            <input type="checkbox" id="switch-mode" hidden>
+            <label for="switch-mode" class="switch-mode"></label>
+            </a>
+           
+        </nav>
+        <!-- NAVBAR -->
+
+        <!-- MAIN -->
+        <main>
+            <div class="head-title">
+                <div class="left">
+                    <h1>Add Coaches</h1>
+                    <ul class="breadcrumb">
+                        <li>
+                            <a href="Addcoaches.html">Add Coaches</a>
+                        </li>
+                        <li><i class='bx bx-chevron-right' ></i></li>
+                        <li>
+                            <a class="active" href="index.html">Dashboard</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Add Coach Form -->
+            <div class="form-container">
+                <h3>Add a New Coach</h3>
+                <form id="addCoachForm">
+                    <input type="hidden" id="coachId">
+
+                    <div class="form-group">
+                        <label for="coachName">Coach Name</label>
+                        <input type="text" id="coachName" name="coachName" placeholder="Enter Coach Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="coachEmail">Coach Email</label>
+                        <input type="email" id="coachEmail" name="coachEmail" placeholder="Enter Coach Email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="coachPhone">Coach Phone</label>
+                        <input type="tel" id="coachPhone" name="coachPhone" placeholder="Enter Coach Phone" required>
+                    </div>
+                    <button type="submit" class="btn">Add Coach</button>
+                </form>
+            </div>
+
+            <div class="table-data">
+                <div class="order">
+                    <div class="head">
+                        <h3>Recent Coach Added</h3>
+                        <i class='bx bx-search' ></i>
+                        <i class='bx bx-filter' ></i>
+                    </div>
+                    <table id="coachTable">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Date Added</th>
+                                <th>Role</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- New coaches will appear here -->
+                        </tbody>
+                    </table>
+                </div>
+        </main>
+        <!-- MAIN -->
+    </section>
+    <!-- CONTENT -->
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { 
+            getFirestore, collection, addDoc, getDocs, orderBy, query, deleteDoc, doc, updateDoc, Timestamp 
+        } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyBNlcpQZI3TgfuP-bf1sCuhQjSNFXAdUvs",
+            authDomain: "selfcare-1476e.firebaseapp.com",
+            projectId: "selfcare-1476e",
+            storageBucket: "selfcare-1476e.appspot.com",
+            messagingSenderId: "609604667702",
+            appId: "1:609604667702:web:37726298edfa70ed558b97"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Add Coach Form Submission
+        document.getElementById("addCoachForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            let coachId = document.getElementById("coachId").value;
+            let coachName = document.getElementById("coachName").value.trim();
+            let coachEmail = document.getElementById("coachEmail").value.trim();
+            let coachPhone = document.getElementById("coachPhone").value.trim();
+
+            if (!coachName || !coachEmail || !coachPhone) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            try {
+                if (coachId) {
+                    // Update Existing Coach
+                    const coachRef = doc(db, "coaches", coachId);
+                    await updateDoc(coachRef, {
+                        name: coachName,
+                        email: coachEmail,
+                        phone: coachPhone
+                    });
+                    alert("Coach updated successfully!");
+                } else {
+                    // Add New Coach
+                    await addDoc(collection(db, "coaches"), {
+                        name: coachName,
+                        email: coachEmail,
+                        phone: coachPhone,
+                        createdAt: Timestamp.fromDate(new Date())  // Ensure Firestore timestamp is stored correctly
+                    });
+                    alert("Coach added successfully!");
+                }
+
+                document.getElementById("addCoachForm").reset();
+                document.getElementById("coachId").value = ""; // Reset hidden field
+                loadCoaches();
+            } catch (error) {
+                console.error("Error saving coach: ", error);
+                alert("An error occurred while saving the coach.");
+            }
+        });
+
+        // Load Coaches from Firestore
+        async function loadCoaches() {
+    let tbody = document.querySelector("#coachTable tbody");
+    tbody.innerHTML = "";
+
+    try {
+        console.log("Fetching coaches...");
+        const querySnapshot = await getDocs(query(collection(db, "coaches"), orderBy("createdAt", "desc")));
+        
+        if (querySnapshot.empty) {
+            console.log("No coaches found.");
+            tbody.innerHTML = `<tr><td colspan="3">No coaches available.</td></tr>`;
+            return;
+        }
+
+        console.log("Coaches fetched:", querySnapshot.docs.length);
+
+        querySnapshot.forEach((docSnap) => {
+            let coach = docSnap.data();
+            console.log("Coach data:", coach);  // Debugging log
+
+            // Extract values, ensuring default values if undefined
+            let coachName = coach.username || "Unknown Name";
+            let coachEmail = coach.email || "No Email";
+            let role = coach.role || "No Role";
+            let dateAdded = coach.createdAt ? coach.createdAt.toDate().toLocaleDateString() : "No Date";
+
+            let newRow = document.createElement("tr");
+            newRow.innerHTML = `
+                <td>${coachName}</td>
+                <td>${dateAdded}</td>
+                <td>${role}</td>
+                <td>
+                    <button class="btn-edit" onclick="editCoach('${docSnap.id}', '${coachName}', '${coachEmail}')">Edit</button>
+                    <button class="btn-delete" onclick="deleteCoach('${docSnap.id}')">Delete</button>
+                </td>
+            `;
+            tbody.appendChild(newRow);
+        });
+    } catch (error) {
+        console.error("Error loading coaches:", error);
+    }
+}
+
+
+        // Edit coach function
+        window.editCoach = function (id, name, email, phone) {
+            document.getElementById("coachId").value = id;
+            document.getElementById("coachName").value = name;
+            document.getElementById("coachEmail").value = email;
+            document.getElementById("coachPhone").value = phone;
+        };
+
+        // Delete coach function
+        window.deleteCoach = async function (id) {
+            if (confirm("Are you sure you want to delete this coach?")) {
+                await deleteDoc(doc(db, "coaches", id));
+                alert("Coach deleted successfully!");
+                loadCoaches();
+            }
+        };
+
+        // Load coaches when the page loads
+        window.onload = loadCoaches;
+
+    </script>
+      
+    
+    
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Boxicons -->
+    <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+    <title>InnerU</title>
+</head>
+
+<style>
+    /* Table styling */
+    #userTable {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    #userTable th, #userTable td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    #userTable th {
+        background-color: #f2f2f2;
+    }
+    td button {
+    margin: 5px;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+.delete-btn {
+    background-color: red;
+    color: white;
+}
+.add-btn {
+    background-color: blue;
+    color: white;
+}
+.coach-btn {
+    background-color: green;
+    color: white;
+}
+
+</style>
+
+<body>
+    <!-- SIDEBAR -->
+    <section id="sidebar">
+        <a href="#" class="brand">
+            <i class='bx bxs-donate-heart'></i>        
+            <span class="text">InnerU</span>
+        </a>
+
+        <ul class="side-menu top">
+            <li><a href="index.html"><i class='bx bxs-dashboard'></i> <span class="text">Dashboard</span></a></li>
+            <li><a href="Profile.html"><i class='bx bxs-user-circle'></i> <span class="text">Profile</span></a></li>
+            <li><a href="Addcoaches.html"><i class='bx bxs-user-plus'></i> <span class="text">Add Coaches</span></a></li>
+            <li class="active"><a href="Users.html"><i class='bx bxs-user'></i> <span class="text">Users</span></a></li>
+            <li><a href="Teams.html"><i class='bx bxs-group'></i> <span class="text">Teams</span></a></li>
+        </ul>
+        <ul class="side-menu">
+            <li><a href="Leaderboard.html"><i class='bx bxs-bar-chart-alt-2'></i> <span class="text">Leaderboard</span></a></li>
+            <li><a href="Login.html" class="logout"><i class='bx bxs-log-out-circle'></i> <span class="text">Logout</span></a></li>
+        </ul>
+    </section>
+    <!-- SIDEBAR -->
+
+    <!-- CONTENT -->
+    <section id="content">
+        <!-- NAVBAR -->
+        <nav>
+            <i class='bx bx-menu'></i>
+            <a href="#" class="nav-link">Categories</a>
+            <form action="#">
+                <div class="form-input">
+                    <input type="search" placeholder="Search...">
+                    <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
+                </div>
+            </form>
+        </nav>
+        <!-- NAVBAR -->
+
+        <!-- MAIN -->
+        <main>
+            <div class="head-title">
+                <div class="left">
+                    <h1>Users</h1>
+                    <ul class="breadcrumb">
+                        <li><a href="ViewUser.html">Users</a></li>
+                        <li><i class='bx bx-chevron-right'></i></li>
+                        <li><a class="active" href="index.html">Dashboard</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="table-data">
+                <div class="order">
+                    <div class="head">
+                        <h3>All Users</h3>
+                        <i class='bx bx-search'></i>
+                        <i class='bx bx-filter'></i>
+                    </div>
+                    <table id="userTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Date Added</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Users will be dynamically loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+        <!-- MAIN -->
+    </section>
+    <!-- CONTENT -->
+
+    <!-- Firebase & Firestore -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+    
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBNlcpQZI3TgfuP-bf1sCuhQjSNFXAdUvs",
+            authDomain: "selfcare-1476e.firebaseapp.com",
+            projectId: "selfcare-1476e",
+            storageBucket: "selfcare-1476e.firebasestorage.app",
+            messagingSenderId: "609604667702",
+            appId: "1:609604667702:web:37726298edfa70ed558b97"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+    
+        // Function to Load Users from Firestore
+        async function loadUsers() {
+    let tbody = document.querySelector("#userTable tbody");
+    tbody.innerHTML = ""; // Clear table before loading data
+
+    try {
+        console.log("Fetching users...");
+        const querySnapshot = await getDocs(query(collection(db, "users"), orderBy("createdAt", "desc")));
+
+        querySnapshot.forEach((docSnap) => {
+            let user = docSnap.data();
+            console.log("User Data:", user); // Debugging
+
+            let newRow = document.createElement("tr");
+
+            newRow.innerHTML = `
+                <td>${user.username || "N/A"}</td>
+                <td>${user.email || "N/A"}</td>
+                <td>${user.createdAt ? new Date(user.createdAt.seconds * 1000).toLocaleDateString() : "N/A"}</td>
+                <td>
+                    <button class="delete-btn" data-id="${docSnap.id}">Delete</button>
+                    <button class="coach-btn" data-id="${docSnap.id}">Set as Coach</button>
+                </td>
+            `;
+
+            tbody.appendChild(newRow);
+        });
+
+        // Add Event Listeners to Action Buttons
+        document.querySelectorAll(".delete-btn").forEach(button => {
+            button.addEventListener("click", async (event) => {
+                let userId = event.target.getAttribute("data-id");
+                if (confirm("Are you sure you want to delete this user?")) {
+                    await deleteUser(userId);
+                }
+            });
+        });
+
+        document.querySelectorAll(".coach-btn").forEach(button => {
+            button.addEventListener("click", async (event) => {
+                let userId = event.target.getAttribute("data-id");
+                await setAsCoach(userId);
+            });
+        });
+
+    } catch (error) {
+        console.error("Error loading users:", error);
+    }
+}
+
+// Function to Delete User
+async function deleteUser(userId) {
+    try {
+        await deleteDoc(doc(db, "users", userId));
+        alert("User deleted successfully.");
+        loadUsers(); // Reload the table
+    } catch (error) {
+        console.error("Error deleting user:", error);
+    }
+}
+
+// Function to Set as Coach
+import { doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+async function setAsCoach(userId) {
+    try {
+        const userRef = doc(db, "users", userId);
+        const userSnap = await getDoc(userRef);
+
+        if (!userSnap.exists()) {
+            alert("User not found!");
+            return;
+        }
+
+        const userData = userSnap.data();
+
+        // Add user to "coaches" collection
+        await setDoc(doc(db, "coaches", userId), {
+            username: userData.username || "N/A",
+            email: userData.email || "N/A",
+            createdAt: userData.createdAt || new Date(),
+            role: "Coach"
+        });
+
+        // Update user role in "users" collection
+        await updateDoc(userRef, { role: "Coach" });
+
+        // Remove the user row from the UI
+        document.querySelector(`button[data-id="${userId}"]`).closest("tr").remove();
+
+        alert("User has been set as Coach and removed from the table.");
+    } catch (error) {
+        console.error("Error setting user as coach:", error);
+    }
+}
+
+
+
+    
+        // Load users when the page loads
+        window.onload = loadUsers;
+    </script>
+    <script src="script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Boxicons -->
+    <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+    <title>InnerU</title>
+</head>
+
+<style>
+    /* Table styling */
+    #userTable {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    #userTable th, #userTable td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    #userTable th {
+        background-color: #f2f2f2;
+    }
+    td button {
+    margin: 5px;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+
+</style>
+
+<body>
+    <!-- SIDEBAR -->
+    <section id="sidebar">
+        <a href="#" class="brand">
+            <i class='bx bxs-donate-heart'></i>        
+            <span class="text">InnerU</span>
+        </a>
+
+        <ul class="side-menu top">
+            <li><a href="index.html"><i class='bx bxs-dashboard'></i> <span class="text">Dashboard</span></a></li>
+            <li><a href="Profile.html"><i class='bx bxs-user-circle'></i> <span class="text">Profile</span></a></li>
+            <li><a href="Addcoaches.html"><i class='bx bxs-user-plus'></i> <span class="text">Add Coaches</span></a></li>
+            <li><a href="Users.html"><i class='bx bxs-user'></i> <span class="text">Users</span></a></li>
+            <li><a href="Teams.html"><i class='bx bxs-group'></i> <span class="text">Teams</span></a></li>
+        </ul>
+        <ul class="side-menu">
+            <li class="active"><a href="Leaderboard.html"><i class='bx bxs-bar-chart-alt-2'></i> <span class="text">Leaderboard</span></a></li>
+            <li><a href="Login.html" class="logout"><i class='bx bxs-log-out-circle'></i> <span class="text">Logout</span></a></li>
+        </ul>
+    </section>
+    <!-- SIDEBAR -->
+
+    <!-- CONTENT -->
+    <section id="content">
+        <!-- NAVBAR -->
+        <nav>
+            <i class='bx bx-menu'></i>
+            <a href="#" class="nav-link">Categories</a>
+            <form action="#">
+                <div class="form-input">
+                    <input type="search" placeholder="Search...">
+                    <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
+                </div>
+            </form>
+        </nav>
+        <!-- NAVBAR -->
+
+        <!-- MAIN -->
+        <main>
+            <div class="head-title">
+                <div class="left">
+                    <h1>Users</h1>
+                    <ul class="breadcrumb">
+                        <li><a href="ViewUser.html">Users</a></li>
+                        <li><i class='bx bx-chevron-right'></i></li>
+                        <li><a class="active" href="index.html">Dashboard</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="table-data">
+                <div class="order">
+                    <div class="head">
+                        <h3>All Users</h3>
+                        <i class='bx bx-search'></i>
+                        <i class='bx bx-filter'></i>
+                    </div>
+                    <table id="userTable">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Username</th>
+                                <th>Total Points</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard">
+                            <!-- Data will be inserted here dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+        <!-- MAIN -->
+    </section>
+    <!-- CONTENT -->
+
+    <!-- Firebase & Firestore -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js';
+        import { getFirestore, collection, getDocs, query, orderBy } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBNlcpQZI3TgfuP-bf1sCuhQjSNFXAdUvs",
+            authDomain: "selfcare-1476e.firebaseapp.com",
+            projectId: "selfcare-1476e",
+            storageBucket: "selfcare-1476e.appspot.com",
+            messagingSenderId: "609604667702",
+            appId: "1:609604667702:web:37726298edfa70ed558b97"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Fetch and display leaderboard data
+        async function loadLeaderboard() {
+            const leaderboardTable = document.getElementById("leaderboard");
+            const errorElement = document.getElementById("error");
+
+            try {
+                const userPointsRef = collection(db, "userpoints");
+                const leaderboardQuery = query(userPointsRef, orderBy("totalPoints", "desc"));
+                const querySnapshot = await getDocs(leaderboardQuery);
+
+                leaderboardTable.innerHTML = "";
+                let rank = 1;
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const username = data.username || "Unknown";
+                    const totalPoints = data.totalPoints || 0;
+
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${rank}</td>
+                        <td>${username}</td>
+                        <td>${totalPoints}</td>
+                    `;
+                    leaderboardTable.appendChild(row);
+                    rank++;
+                });
+
+                if (rank === 1) {
+                    errorElement.textContent = "No data found for the leaderboard.";
+                }
+            } catch (error) {
+                errorElement.textContent = "Error fetching leaderboard data: " + error.message;
+            }
+        }
+
+        window.addEventListener("DOMContentLoaded", loadLeaderboard);
+    </script>
+    <script src="script.js"></script>
+
+</body>
+</html>

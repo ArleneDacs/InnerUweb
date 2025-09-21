@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login and Signup</title>
+    <style>
+        :root {
+            --poppins: 'Poppins', sans-serif;
+            --lato: 'Lato', sans-serif;
+            --light: #F9F9F9;
+            --blue: #0bb079;
+            --light-blue: #CFE8FF;
+            --grey: #eee;
+            --dark-grey: #AAAAAA;
+            --dark: #342E37;
+            --orange: #FD7238;
+        }
+
+        body {
+            font-family: var(--poppins);
+            background-color: var(--light);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 350px;
+            background-color: var(--light-blue);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h2 {
+            color: var(--dark);
+            margin-bottom: 20px;
+        }
+
+        input[type="text"], input[type="password"], input[type="email"] {
+            width: 90%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid var(--grey);
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            background-color: var(--blue);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: var(--orange);
+        }
+
+        p {
+            color: var(--dark-grey);
+            margin: 10px 0;
+        }
+
+        a {
+            color: var(--blue);
+            text-decoration: none;
+        }
+
+        .error {
+            color: var(--orange);
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="login">
+        <h2>Login</h2>
+        <input type="email" id="loginEmail" placeholder="Email" />
+        <input type="password" id="loginPassword" placeholder="Password" />
+        <button onclick="login()">Login</button>
+        <p class="error" id="loginError"></p>
+        <p>Don't have an account? <a href="#" onclick="showSignup()">Sign up</a></p>
+    </div>
+
+    <div class="container" id="signup" style="display: none;">
+        <h2>Sign Up</h2>
+        <input type="text" id="signupUsername" placeholder="Username" />
+        <input type="email" id="signupEmail" placeholder="Email" />
+        <input type="password" id="signupPassword" placeholder="Password" />
+        <button onclick="signup()">Sign Up</button>
+        <p class="error" id="signupError"></p>
+        <p>Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
+    </div>
+
+    <!-- Move the script to the bottom of the body to ensure it is loaded after the elements -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js';
+        import { getFirestore, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBNlcpQZI3TgfuP-bf1sCuhQjSNFXAdUvs",
+            authDomain: "selfcare-1476e.firebaseapp.com",
+            projectId: "selfcare-1476e",
+            storageBucket: "selfcare-1476e.appspot.com",
+            messagingSenderId: "609604667702",
+            appId: "1:609604667702:web:37726298edfa70ed558b97"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Wrap all JavaScript logic inside the DOMContentLoaded event to ensure all elements are loaded
+        window.addEventListener('DOMContentLoaded', (event) => {
+
+            // Show Signup form
+            function showSignup() {
+                document.getElementById("login").style.display = "none";
+                document.getElementById("signup").style.display = "block";
+            }
+
+            // Show Login form
+            function showLogin() {
+                document.getElementById("signup").style.display = "none";
+                document.getElementById("login").style.display = "block";
+            }
+
+            // Signup Function
+            function signup() {
+                const username = document.getElementById("signupUsername").value;
+                const email = document.getElementById("signupEmail").value;
+                const password = document.getElementById("signupPassword").value;
+                const errorElement = document.getElementById("signupError");
+
+                createUserWithEmailAndPassword(auth, email, password)
+                    .then((userCredential) => {
+                        const user = userCredential.user;
+
+                        // Save the user data to Firestore 'admin' collection
+                        setDoc(doc(db, "admin", user.uid), {
+                            username: username,
+                            email: email,
+                            userType: "admin",  // Mark as admin (you can add more fields here)
+                            createdAt: serverTimestamp()
+                        }).then(() => {
+                            alert("Signup successful! User data saved to Admin collection.");
+                            showLogin();  // Switch to login after successful signup
+                        }).catch((error) => {
+                            errorElement.textContent = "Error saving user data: " + error.message;
+                        });
+                    })
+                    .catch((error) => {
+                        errorElement.textContent = error.message;
+                    });
+            }
+
+            // Login Function
+            function login() {
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
+    const errorElement = document.getElementById("loginError");
+
+    // Basic email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        errorElement.textContent = "Please enter a valid email address.";
+        return; // Stop the function if email is invalid
+    }
+
+    // Check if password is not empty
+    if (password === "") {
+        errorElement.textContent = "Please enter your password.";
+        return;
+    }
+
+    signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            alert("Login successful!");
+            window.location.href = "index.html"; // Redirect to index.html after login
+        })
+        .catch((error) => {
+            errorElement.textContent = error.message;
+        });
+}
+
+            // Make these functions globally accessible
+            window.showSignup = showSignup;
+            window.showLogin = showLogin;
+            window.signup = signup;
+            window.login = login;
+        });
+    </script>
+</body>
+</html>
